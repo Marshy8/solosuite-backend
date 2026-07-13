@@ -10,10 +10,11 @@ CREATE TABLE IF NOT EXISTS service_type (
 CREATE TABLE IF NOT EXISTS general_settings (
     id INTEGER PRIMARY KEY CHECK (id = 1),
     barber_name TEXT NOT NULL,
+    rolling_schedule_length INTEGER,
     buffer_minutes INTEGER DEFAULT 15
 );
 
-CREATE TABLE IF NOT EXISTS weekly_schedule (
+CREATE TABLE IF NOT EXISTS day_schedule (
     id INTEGER PRIMARY KEY,
     start_time TEXT,
     end_time TEXT,

@@ -1,7 +1,7 @@
 import { calendar_v3 } from "googleapis";
 import { TimeBoundary } from "../../../types/timeBoundary.type";
 
-export function TimeBoundaryToGoogleCalendar(
+export function timeBoundaryToGoogleCalendar(
   timeBoundary: TimeBoundary,
 ): calendar_v3.Schema$EventDateTime {
   if (timeBoundary.kind === "fullDay") {

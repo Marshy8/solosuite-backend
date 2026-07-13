@@ -8,7 +8,7 @@ INSERT INTO service_type (name, cost, description, duration_minutes, buffer_over
 INSERT INTO general_settings (id, barber_name, buffer_minutes) VALUES
     (1, 'Buck Harris', 15);
 
-INSERT INTO weekly_schedule (id, start_time, end_time, is_working) VALUES
+INSERT INTO day_schedule (id, start_time, end_time, is_working) VALUES
     (0, NULL, NULL, 0),
     (1, '09:00', '17:00', 1),
     (2, '09:00', '17:00', 1),

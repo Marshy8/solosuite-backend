@@ -21,6 +21,6 @@ calendarRouter.post("/calendar/events", async (req: Request, res: Response) => {
     res.json(event);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to create calendadr event" });
+    res.status(500).json({ error: "Failed to create calendar event" });
   }
 });
