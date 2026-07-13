@@ -1,5 +1,0 @@
-{
-  "summary": "Test Time Off",
-  "start": { "kind": "fullDay", "date": "2026-08-10" },
-  "end": { "kind": "fullDay", "date": "2026-08-17" }
-}

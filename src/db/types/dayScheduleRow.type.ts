@@ -1,4 +1,4 @@
-export type WeeklyScheduleRow = {
+export type DayScheduleRow = {
   id: number;
   start_time: string | null;
   end_time: string | null;

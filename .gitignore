@@ -9,4 +9,5 @@ dist/
 .DS_Store
 coverage/
 credentials.json
+requests.http
 CLAUDE.md

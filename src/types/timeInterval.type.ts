@@ -1,7 +1,6 @@
 import { TimeBoundary } from "./timeBoundary.type";
 
-export type TimeOff = {
-  summary: string;
+export type TimeInterval = {
   start: TimeBoundary;
   end: TimeBoundary;
 };
