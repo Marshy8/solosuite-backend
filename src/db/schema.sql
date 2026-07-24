@@ -4,12 +4,13 @@ CREATE TABLE IF NOT EXISTS service_type (
     cost INTEGER NOT NULL,
     description TEXT,
     duration_minutes INTEGER NOT NULL,
-    buffer_override_minutes INTEGER DEFAULT NULL
+    buffer_override_minutes INTEGER DEFAULT NULL,
+    is_active INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS general_settings (
     id INTEGER PRIMARY KEY CHECK (id = 1),
-    barber_name TEXT NOT NULL,
+    worker_name TEXT NOT NULL,
     rolling_schedule_length INTEGER,
     buffer_minutes INTEGER DEFAULT 15
 );

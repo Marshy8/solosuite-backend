@@ -8,8 +8,7 @@
       "program": "${file}",
       "runtimeExecutable": "tsx",
       "envFile": "${workspaceFolder}/.env",
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnFirstSessionStart",
+      "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
       "preLaunchTask": "clean test db"
     },
@@ -23,8 +22,7 @@
       "env": { "GOOGLE_INTEGRATION": "1" },
       "autoAttachChildProcesses": true,
       "smartStep": true,
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnFirstSessionStart",
+      "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"]
     },
     {
@@ -34,8 +32,7 @@
       "program": "${workspaceFolder}/src/index.ts",
       "runtimeExecutable": "tsx",
       "envFile": "${workspaceFolder}/.env",
-      "console": "internalConsole",
-      "internalConsoleOptions": "openOnFirstSessionStart",
+      "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
       "preLaunchTask": "clean test db"
     }
