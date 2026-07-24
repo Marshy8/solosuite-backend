@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "solosuite-backend",
   "version": "1.0.0",
-  "description": "A minimal Node.js TypeScript application.",
+  "description": "SoloSuite backend — scheduling, payment, and client-notes API for solo beauty/wellness professionals.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && cp src/db/schema.sql dist/db/schema.sql && cp src/db/seed.sql dist/db/seed.sql",

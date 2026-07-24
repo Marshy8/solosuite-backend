@@ -1,11 +1,11 @@
-INSERT INTO service_type (name, cost, description, duration_minutes, buffer_override_minutes) VALUES
-    ('Buzz Cut', 2000, 'Short clipper cut, all one length.', 15, NULL),
-    ('Classic Haircut', 3000, 'Scissor and clipper cut with styling.', 30, NULL),
-    ('Beard Trim', 1500, 'Shape and trim facial hair.', 15, NULL),
-    ('Haircut + Beard', 4000, 'Full haircut combined with a beard trim.', 45, 5),
-    ('Hot Towel Shave', 3500, 'Straight razor shave with hot towel prep.', 40, 10);
+INSERT INTO service_type (name, cost, description, duration_minutes, buffer_override_minutes, is_active) VALUES
+    ('Buzz Cut', 2000, 'Short clipper cut, all one length.', 15, NULL, 1),
+    ('Classic Haircut', 3000, 'Scissor and clipper cut with styling.', 30, NULL, 1),
+    ('Beard Trim', 1500, 'Shape and trim facial hair.', 15, NULL, 1),
+    ('Haircut + Beard', 4000, 'Full haircut combined with a beard trim.', 45, 5, 1),
+    ('Hot Towel Shave', 3500, 'Straight razor shave with hot towel prep.', 40, 10, 1);
 
-INSERT INTO general_settings (id, barber_name, buffer_minutes) VALUES
+INSERT INTO general_settings (id, worker_name, buffer_minutes) VALUES
     (1, 'Buck Harris', 15);
 
 INSERT INTO day_schedule (id, start_time, end_time, is_working) VALUES
