@@ -11,10 +11,7 @@ export function validateServiceType(
   }
   const serviceType = input as Record<string, unknown>;
 
-  if (
-    typeof serviceType.name !== "string" ||
-    serviceType.name.trim() === ""
-  ) {
+  if (typeof serviceType.name !== "string" || serviceType.name.trim() === "") {
     throw new ValidationError(
       `name must be a non-empty string. Received -> ${serviceType.name}`,
     );

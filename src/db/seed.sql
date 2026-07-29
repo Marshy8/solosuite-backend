@@ -5,8 +5,8 @@ INSERT INTO service_type (name, cost, description, duration_minutes, buffer_over
     ('Haircut + Beard', 4000, 'Full haircut combined with a beard trim.', 45, 5, 1),
     ('Hot Towel Shave', 3500, 'Straight razor shave with hot towel prep.', 40, 10, 1);
 
-INSERT INTO general_settings (id, worker_name, buffer_minutes) VALUES
-    (1, 'Buck Harris', 15);
+INSERT INTO general_settings (id, worker_name, rolling_schedule_length, buffer_minutes) VALUES
+    (1, 'Buck Harris', 60, 15);
 
 INSERT INTO day_schedule (id, start_time, end_time, is_working) VALUES
     (0, NULL, NULL, 0),
