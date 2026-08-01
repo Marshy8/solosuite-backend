@@ -112,6 +112,21 @@ describe("createServiceType", () => {
       }),
     ).toThrow(/duration_minutes/);
   });
+
+  it("accepts null for buffer_override_minutes", () => {
+    createServiceType({
+      id: -1,
+      name: "No Override",
+      cost: 1000,
+      description: "desc",
+      duration_minutes: 10,
+      buffer_override_minutes: null,
+      is_active: true,
+    });
+
+    const created = listServiceTypes().find((s) => s.name === "No Override");
+    expect(created?.buffer_override_minutes).toBeNull();
+  });
 });
 
 describe("updateServiceType", () => {
@@ -149,6 +164,20 @@ describe("updateServiceType", () => {
         is_active: true,
       }),
     ).toThrow(/name/);
+  });
+
+  it("clears an existing buffer_override_minutes back to null", () => {
+    updateServiceType({
+      id: 4,
+      name: "Haircut + Beard",
+      cost: 4000,
+      description: "Full haircut combined with a beard trim.",
+      duration_minutes: 45,
+      buffer_override_minutes: null,
+      is_active: true,
+    });
+
+    expect(getServiceType(4).buffer_override_minutes).toBeNull();
   });
 });
 

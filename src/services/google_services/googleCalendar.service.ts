@@ -17,6 +17,28 @@ export async function listUpcomingEvents(
   return response.data.items ?? [];
 }
 
+export async function getBusyIntervals(
+  timeMin: string,
+  timeMax: string,
+): Promise<{ start: string; end: string }[]> {
+  const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+
+  const response = await calendar.freebusy.query({
+    requestBody: {
+      timeMin,
+      timeMax,
+      items: [{ id: "primary" }],
+    },
+  });
+
+  const busy = response.data.calendars?.primary?.busy ?? [];
+
+  return busy.filter(
+    (period): period is { start: string; end: string } =>
+      period.start != null && period.end != null,
+  );
+}
+
 export async function createEvent(
   event: calendar_v3.Schema$Event,
 ): Promise<calendar_v3.Schema$Event> {

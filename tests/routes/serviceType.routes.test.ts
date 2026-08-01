@@ -64,6 +64,25 @@ describe("POST /serviceType", () => {
     });
   });
 
+  it("accepts null for buffer_override_minutes", async () => {
+    const post = await request(app).post("/serviceType").send({
+      id: -1,
+      name: "No Override",
+      cost: 1000,
+      description: "desc",
+      duration_minutes: 10,
+      buffer_override_minutes: null,
+      is_active: true,
+    });
+
+    expect(post.status).toBe(201);
+
+    const all = await request(app).get("/serviceType/all");
+    expect(
+      all.body.find((s: { name: string }) => s.name === "No Override"),
+    ).toMatchObject({ buffer_override_minutes: null });
+  });
+
   it("rejects invalid input with 400 and doesn't add a row", async () => {
     const before = await request(app).get("/serviceType/all");
 
@@ -124,6 +143,23 @@ describe("PUT /serviceType", () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/name/);
+  });
+
+  it("clears an existing buffer_override_minutes back to null", async () => {
+    const put = await request(app).put("/serviceType").send({
+      id: 4,
+      name: "Haircut + Beard",
+      cost: 4000,
+      description: "Full haircut combined with a beard trim.",
+      duration_minutes: 45,
+      buffer_override_minutes: null,
+      is_active: true,
+    });
+
+    expect(put.status).toBe(204);
+
+    const res = await request(app).get("/serviceType/4");
+    expect(res.body.buffer_override_minutes).toBeNull();
   });
 });
 

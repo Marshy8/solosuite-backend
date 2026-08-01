@@ -20,6 +20,7 @@ export function updateGeneralSettings(input: GeneralSettingsInput) {
     worker_name: input.worker_name,
     rolling_schedule_length: input.rolling_schedule_length,
     buffer_minutes: input.buffer_minutes,
+    timezone: input.timezone,
   };
 
   updateGeneralSettingsRow(generalSettingsRow);

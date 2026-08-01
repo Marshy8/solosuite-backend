@@ -3,6 +3,7 @@ import {
   getAllDaySchedules,
   updateDaySchedule,
 } from "../../db/queries/daySchedule.queries";
+import { getGeneralSettings } from "../../db/queries/generalSettings.queries";
 import { TimeInterval } from "../../types/timeInterval.type";
 import { DayScheduleRow } from "../../db/types/dayScheduleRow.type";
 import { dbTimeToTimeBoundary } from "./helpers/dbTimeToTimeBoundary.helper";
@@ -20,8 +21,9 @@ export function getDayWorkingHours(day: number): TimeInterval | undefined {
     return undefined;
   }
 
-  const start = dbTimeToTimeBoundary(daySchedule.start_time);
-  const end = dbTimeToTimeBoundary(daySchedule.end_time);
+  const timeZone = getGeneralSettings()?.timezone ?? "America/New_York";
+  const start = dbTimeToTimeBoundary(daySchedule.start_time, timeZone);
+  const end = dbTimeToTimeBoundary(daySchedule.end_time, timeZone);
 
   if (start === null || end === null) {
     return undefined;

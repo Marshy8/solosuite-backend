@@ -6,7 +6,7 @@ export function validateGeneralSettings(
 ): asserts input is GeneralSettingsInput {
   if (typeof input !== "object" || input === null) {
     throw new ValidationError(
-      "General Settings must be an object with id = 1, worker_name, rolling_schedule_length, and buffer_minutes",
+      "General Settings must be an object with id = 1, worker_name, rolling_schedule_length, buffer_minutes, and timezone",
     );
   }
 
@@ -15,6 +15,16 @@ export function validateGeneralSettings(
   if (typeof generalSettings.id !== "number" || generalSettings.id !== 1) {
     throw new ValidationError(
       `id must be a number and equal to 1. Received -> ${generalSettings.id}`,
+    );
+  }
+
+  if (
+    typeof generalSettings.timezone !== "string" ||
+    generalSettings.timezone.trim() === "" ||
+    !isValidTimeZone(generalSettings.timezone)
+  ) {
+    throw new ValidationError(
+      `timezone must be a valid IANA time zone name (e.g. "America/New_York"). Received -> ${generalSettings.timezone}`,
     );
   }
 
@@ -28,22 +38,31 @@ export function validateGeneralSettings(
   }
 
   if (
-    generalSettings.rolling_schedule_length !== null &&
-    (typeof generalSettings.rolling_schedule_length !== "number" ||
-      generalSettings.rolling_schedule_length < 0)
+    typeof generalSettings.rolling_schedule_length !== "number" ||
+    !Number.isInteger(generalSettings.rolling_schedule_length) ||
+    generalSettings.rolling_schedule_length < 0
   ) {
     throw new ValidationError(
-      `rolling_schedule_length must be a number >= 0 or null. Received -> ${generalSettings.rolling_schedule_length}`,
+      `rolling_schedule_length must be a non-negative integer. Received -> ${generalSettings.rolling_schedule_length}`,
     );
   }
 
   if (
-    generalSettings.buffer_minutes !== null &&
-    (typeof generalSettings.buffer_minutes !== "number" ||
-      generalSettings.buffer_minutes < 0)
+    typeof generalSettings.buffer_minutes !== "number" ||
+    !Number.isInteger(generalSettings.buffer_minutes) ||
+    generalSettings.buffer_minutes < 0
   ) {
     throw new ValidationError(
-      `buffer_minutes must be a number >= 0 or null. Received -> ${generalSettings.buffer_minutes}`,
+      `buffer_minutes must be a non-negative integer. Received -> ${generalSettings.buffer_minutes}`,
     );
+  }
+}
+
+function isValidTimeZone(timezone: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: timezone });
+    return true;
+  } catch {
+    return false;
   }
 }
