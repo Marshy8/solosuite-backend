@@ -11,6 +11,7 @@ describe("listGeneralSettings", () => {
       worker_name: "Buck Harris",
       rolling_schedule_length: 60,
       buffer_minutes: 15,
+      timezone: "America/New_York",
     });
   });
 });
@@ -22,6 +23,7 @@ describe("updateGeneralSettings", () => {
       worker_name: "Jane Doe",
       rolling_schedule_length: 30,
       buffer_minutes: 10,
+      timezone: "America/Chicago",
     });
 
     expect(listGeneralSettings()).toEqual({
@@ -29,23 +31,56 @@ describe("updateGeneralSettings", () => {
       worker_name: "Jane Doe",
       rolling_schedule_length: 30,
       buffer_minutes: 10,
+      timezone: "America/Chicago",
     });
   });
 
-  it("accepts null for rolling_schedule_length and buffer_minutes", () => {
-    updateGeneralSettings({
-      id: 1,
-      worker_name: "Jane Doe",
-      rolling_schedule_length: null,
-      buffer_minutes: null,
-    });
+  it("rejects null for rolling_schedule_length", () => {
+    const before = listGeneralSettings();
 
-    expect(listGeneralSettings()).toEqual({
-      id: 1,
-      worker_name: "Jane Doe",
-      rolling_schedule_length: null,
-      buffer_minutes: null,
-    });
+    expect(() =>
+      updateGeneralSettings({
+        id: 1,
+        worker_name: "Jane Doe",
+        rolling_schedule_length: null as unknown as number,
+        buffer_minutes: 10,
+        timezone: "America/New_York",
+      }),
+    ).toThrow(/rolling_schedule_length/);
+
+    expect(listGeneralSettings()).toEqual(before);
+  });
+
+  it("rejects null for buffer_minutes", () => {
+    const before = listGeneralSettings();
+
+    expect(() =>
+      updateGeneralSettings({
+        id: 1,
+        worker_name: "Jane Doe",
+        rolling_schedule_length: 30,
+        buffer_minutes: null as unknown as number,
+        timezone: "America/New_York",
+      }),
+    ).toThrow(/buffer_minutes/);
+
+    expect(listGeneralSettings()).toEqual(before);
+  });
+
+  it("rejects a non-integer rolling_schedule_length", () => {
+    const before = listGeneralSettings();
+
+    expect(() =>
+      updateGeneralSettings({
+        id: 1,
+        worker_name: "Jane Doe",
+        rolling_schedule_length: 30.5,
+        buffer_minutes: 10,
+        timezone: "America/New_York",
+      }),
+    ).toThrow(/rolling_schedule_length/);
+
+    expect(listGeneralSettings()).toEqual(before);
   });
 
   it("rejects an id other than 1", () => {
@@ -57,6 +92,7 @@ describe("updateGeneralSettings", () => {
         worker_name: "Someone",
         rolling_schedule_length: 30,
         buffer_minutes: 10,
+        timezone: "America/New_York",
       }),
     ).toThrow(/id/);
 
@@ -72,6 +108,7 @@ describe("updateGeneralSettings", () => {
         worker_name: "   ",
         rolling_schedule_length: 30,
         buffer_minutes: 10,
+        timezone: "America/New_York",
       }),
     ).toThrow(/worker_name/);
 
@@ -87,6 +124,7 @@ describe("updateGeneralSettings", () => {
         worker_name: "Jane Doe",
         rolling_schedule_length: -1,
         buffer_minutes: 10,
+        timezone: "America/New_York",
       }),
     ).toThrow(/rolling_schedule_length/);
 
@@ -102,8 +140,41 @@ describe("updateGeneralSettings", () => {
         worker_name: "Jane Doe",
         rolling_schedule_length: 30,
         buffer_minutes: -1,
+        timezone: "America/New_York",
       }),
     ).toThrow(/buffer_minutes/);
+
+    expect(listGeneralSettings()).toEqual(before);
+  });
+
+  it("rejects an empty timezone", () => {
+    const before = listGeneralSettings();
+
+    expect(() =>
+      updateGeneralSettings({
+        id: 1,
+        worker_name: "Jane Doe",
+        rolling_schedule_length: 30,
+        buffer_minutes: 10,
+        timezone: "   ",
+      }),
+    ).toThrow(/timezone/);
+
+    expect(listGeneralSettings()).toEqual(before);
+  });
+
+  it("rejects a timezone that isn't a valid IANA name", () => {
+    const before = listGeneralSettings();
+
+    expect(() =>
+      updateGeneralSettings({
+        id: 1,
+        worker_name: "Jane Doe",
+        rolling_schedule_length: 30,
+        buffer_minutes: 10,
+        timezone: "Not/A_Real_Zone",
+      }),
+    ).toThrow(/timezone/);
 
     expect(listGeneralSettings()).toEqual(before);
   });

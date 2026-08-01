@@ -40,12 +40,13 @@ export function validateServiceType(
   }
 
   if (
-    typeof serviceType.buffer_override_minutes !== "number" ||
-    !Number.isInteger(serviceType.buffer_override_minutes) ||
-    serviceType.buffer_override_minutes < 0
+    serviceType.buffer_override_minutes !== null &&
+    (typeof serviceType.buffer_override_minutes !== "number" ||
+      !Number.isInteger(serviceType.buffer_override_minutes) ||
+      serviceType.buffer_override_minutes < 0)
   ) {
     throw new ValidationError(
-      `buffer_override_minutes must be a non-negative integer. Received -> ${serviceType.buffer_override_minutes}`,
+      `buffer_override_minutes must be a non-negative integer or null. Received -> ${serviceType.buffer_override_minutes}`,
     );
   }
 

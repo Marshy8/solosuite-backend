@@ -1,0 +1,279 @@
+# Backend — API scratchpad for the REST Client extension (humao.rest-client).
+# Click the "Send Request" link that appears above each request.
+#
+# Prereqs:
+#   - Server running locally: "Debug server", `npm run dev`, or `docker compose up --build -d`
+#   - The Google-backed routes (calendar/*, timeOff/*) need a valid OAuth token first:
+#     open {{base}}/auth in a browser and complete the Google consent screen once.
+#   - The daySchedule, serviceType, and generalSettings routes are DB-only and
+#     work without Google.
+
+@base = http://localhost:3000
+
+
+###############################################################################
+# Auth (browser flow — not clickable here)
+###############################################################################
+
+# GET {{base}}/auth
+#   Open this in a BROWSER, not the REST Client — it redirects to Google's
+#   consent screen. After you approve, Google calls /oauth2callback and the
+#   token is saved. You only need to do this once per token.
+
+
+###############################################################################
+# Calendar  (hits Google Calendar — needs OAuth)
+###############################################################################
+
+### List upcoming calendar events
+GET {{base}}/calendar/events
+
+### Create a raw calendar event (body is a Google Calendar event)
+POST {{base}}/calendar/events
+Content-Type: application/json
+
+{
+  "summary": "Test appointment",
+  "start": { "dateTime": "2026-08-10T09:00:00", "timeZone": "America/New_York" },
+  "end":   { "dateTime": "2026-08-10T09:30:00", "timeZone": "America/New_York" }
+}
+
+
+###############################################################################
+# Day schedule  (DB-only — works without Google)
+###############################################################################
+
+### Get the whole week (all 7 days)
+GET {{base}}/daySchedule
+
+### Set a working day with hours
+PUT {{base}}/daySchedule
+Content-Type: application/json
+
+{ "day": 2, "is_working": true, "start_time": "08:00", "end_time": "12:00" }
+
+### Set a day off (nulls its hours)
+PUT {{base}}/daySchedule
+Content-Type: application/json
+
+{ "day": 5, "is_working": false }
+
+### Validation failure — bad day (expect 400)
+PUT {{base}}/daySchedule
+Content-Type: application/json
+
+{ "day": 9, "is_working": false }
+
+### Validation failure — bad time format (expect 400)
+PUT {{base}}/daySchedule
+Content-Type: application/json
+
+{ "day": 2, "is_working": true, "start_time": "9am", "end_time": "12:00" }
+
+
+###############################################################################
+# Time off  (hits Google Calendar — needs OAuth)
+###############################################################################
+
+### Create a full-day time-off block
+# The response includes the created event's "id" — copy it into the DELETE below.
+POST {{base}}/timeOff
+Content-Type: application/json
+
+{
+  "summary": "Vacation",
+  "start": { "kind": "fullDay", "date": "2026-08-10" },
+  "end":   { "kind": "fullDay", "date": "2026-08-17" }
+}
+
+### Create a specific-time time-off block (e.g. a dentist appointment)
+POST {{base}}/timeOff
+Content-Type: application/json
+
+{
+  "summary": "Dentist",
+  "start": { "kind": "specificTime", "dateTime": "2026-08-10T12:00:00", "timeZone": "America/New_York" },
+  "end":   { "kind": "specificTime", "dateTime": "2026-08-10T13:00:00", "timeZone": "America/New_York" }
+}
+
+### Validation failure — empty summary (expect 400)
+POST {{base}}/timeOff
+Content-Type: application/json
+
+{
+  "summary": "",
+  "start": { "kind": "fullDay", "date": "2026-08-10" },
+  "end":   { "kind": "fullDay", "date": "2026-08-17" }
+}
+
+### Delete a time-off block by its event id
+# Replace PASTE_EVENT_ID_HERE with the "id" returned from a create above.
+DELETE {{base}}/timeOff/25e24g74sq47mdrnmmm73kdvbc
+
+
+###############################################################################
+# Service type  (DB-only — works without Google)
+###############################################################################
+
+### List all service types (active and inactive)
+GET {{base}}/serviceType/all
+
+### List only active service types
+GET {{base}}/serviceType/active
+
+### Get a single service type by id
+GET {{base}}/serviceType/6
+
+### Create a service type
+# "id" is ignored by the server (autoincrement) — send any placeholder value.
+POST {{base}}/serviceType
+Content-Type: application/json
+
+{
+  "id": -1,
+  "name": "Kids Cut",
+  "cost": 1800,
+  "description": "Haircut for children under 12.",
+  "duration_minutes": 20,
+  "buffer_override_minutes": 5,
+  "is_active": true
+}
+
+### Update an existing service type (id must match a real row)
+# buffer_override_minutes: null means "no override" — falls back to
+# general_settings.buffer_minutes for this service.
+PUT {{base}}/serviceType
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Buzz Cut",
+  "cost": 2200,
+  "description": "Short clipper cut, all one length.",
+  "duration_minutes": 15,
+  "buffer_override_minutes": null,
+  "is_active": true
+}
+
+### Validation failure — empty name (expect 400)
+POST {{base}}/serviceType
+Content-Type: application/json
+
+{
+  "id": -1,
+  "name": "",
+  "cost": 1800,
+  "description": "desc",
+  "duration_minutes": 20,
+  "buffer_override_minutes": 0,
+  "is_active": true
+}
+
+### Validation failure — negative cost (expect 400)
+POST {{base}}/serviceType
+Content-Type: application/json
+
+{
+  "id": -1,
+  "name": "Broken",
+  "cost": -100,
+  "description": "desc",
+  "duration_minutes": 20,
+  "buffer_override_minutes": 0,
+  "is_active": true
+}
+
+### Deactivate a service type by id (soft delete — sets is_active = 0)
+DELETE {{base}}/serviceType/6
+
+
+###############################################################################
+# General settings  (DB-only, single row — works without Google)
+###############################################################################
+
+### Get the singleton settings row
+GET {{base}}/generalSettings
+
+### Update the settings row (id must always be 1)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "worker_name": "Buck Harris",
+  "rolling_schedule_length": 60,
+  "buffer_minutes": 15,
+  "timezone": "America/New_York"
+}
+
+### Validation failure — rolling_schedule_length cannot be null (expect 400)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "worker_name": "Buck Harris",
+  "rolling_schedule_length": null,
+  "buffer_minutes": 15,
+  "timezone": "America/New_York"
+}
+
+### Validation failure — buffer_minutes cannot be null (expect 400)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "worker_name": "Buck Harris",
+  "rolling_schedule_length": 60,
+  "buffer_minutes": null,
+  "timezone": "America/New_York"
+}
+
+### Validation failure — id must be 1 (expect 400)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 2,
+  "worker_name": "Buck Harris",
+  "rolling_schedule_length": 60,
+  "buffer_minutes": 15,
+  "timezone": "America/New_York"
+}
+
+### Validation failure — empty worker_name (expect 400)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "worker_name": "",
+  "rolling_schedule_length": 60,
+  "buffer_minutes": 15,
+  "timezone": "America/New_York"
+}
+
+### Validation failure — negative buffer_minutes (expect 400)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "worker_name": "Buck Harris",
+  "rolling_schedule_length": 60,
+  "buffer_minutes": -5,
+  "timezone": "America/New_York"
+}
+
+### Validation failure — invalid timezone (expect 400)
+PUT {{base}}/generalSettings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "worker_name": "Buck Harris",
+  "rolling_schedule_length": 60,
+  "buffer_minutes": 15,
+  "timezone": "Not/A_Real_Zone"
+}
