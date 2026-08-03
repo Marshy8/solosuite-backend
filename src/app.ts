@@ -6,6 +6,7 @@ import { timeOffRouter } from "./routes/timeOff.routes";
 import "./db/connection";
 import { serviceTypeRouter } from "./routes/serviceType.routes";
 import { generalSettingsRouter } from "./routes/generalSettings.routes";
+import { availabilityRouter } from "./routes/availability.routes";
 
 export const app = express();
 
@@ -16,3 +17,4 @@ app.use(dayScheduleRouter);
 app.use(timeOffRouter);
 app.use(serviceTypeRouter);
 app.use(generalSettingsRouter);
+app.use(availabilityRouter);

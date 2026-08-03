@@ -1,38 +1,21 @@
+import { Interval } from "luxon";
 import { TimeChunk } from "../../../types/timeChunk.type";
 
 export function workingAndBusyIntervalsDifference(
   workingIntervals: TimeChunk[],
   busyInterval: TimeChunk,
 ): TimeChunk[] {
+  const busy = toInterval(busyInterval);
+
   return workingIntervals.flatMap((chunk) =>
-    subtractFromChunk(chunk, busyInterval),
+    toInterval(chunk).difference(busy).map(toTimeChunk),
   );
 }
 
-function subtractFromChunk(chunk: TimeChunk, busy: TimeChunk): TimeChunk[] {
-  const noOverlap =
-    busy.end.getTime() <= chunk.start.getTime() ||
-    busy.start.getTime() >= chunk.end.getTime();
-  if (noOverlap) {
-    return [chunk];
-  }
+function toInterval(chunk: TimeChunk): Interval {
+  return Interval.fromDateTimes(chunk.start, chunk.end);
+}
 
-  const fullyCovers =
-    busy.start.getTime() <= chunk.start.getTime() &&
-    busy.end.getTime() >= chunk.end.getTime();
-  if (fullyCovers) {
-    return [];
-  }
-
-  const survivingPieces: TimeChunk[] = [];
-
-  if (busy.start.getTime() > chunk.start.getTime()) {
-    survivingPieces.push({ start: chunk.start, end: busy.start });
-  }
-
-  if (busy.end.getTime() < chunk.end.getTime()) {
-    survivingPieces.push({ start: busy.end, end: chunk.end });
-  }
-
-  return survivingPieces;
+function toTimeChunk(interval: Interval): TimeChunk {
+  return { start: interval.start!.toJSDate(), end: interval.end!.toJSDate() };
 }
