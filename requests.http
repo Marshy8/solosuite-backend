@@ -3,8 +3,9 @@
 #
 # Prereqs:
 #   - Server running locally: "Debug server", `npm run dev`, or `docker compose up --build -d`
-#   - The Google-backed routes (calendar/*, timeOff/*) need a valid OAuth token first:
-#     open {{base}}/auth in a browser and complete the Google consent screen once.
+#   - The Google-backed routes (calendar/*, timeOff/*, availability) need a valid
+#     OAuth token first: open {{base}}/auth in a browser and complete the Google
+#     consent screen once.
 #   - The daySchedule, serviceType, and generalSettings routes are DB-only and
 #     work without Google.
 
@@ -34,8 +35,8 @@ Content-Type: application/json
 
 {
   "summary": "Test appointment",
-  "start": { "dateTime": "2026-08-10T09:00:00", "timeZone": "America/New_York" },
-  "end":   { "dateTime": "2026-08-10T09:30:00", "timeZone": "America/New_York" }
+  "start": { "dateTime": "2026-08-03T17:00:00", "timeZone": "America/New_York" },
+  "end":   { "dateTime": "2026-08-03T17:30:00", "timeZone": "America/New_York" }
 }
 
 
@@ -277,3 +278,27 @@ Content-Type: application/json
   "buffer_minutes": 15,
   "timezone": "Not/A_Real_Zone"
 }
+
+
+###############################################################################
+# Availability  (hits Google Calendar — needs OAuth)
+###############################################################################
+# Computes open booking slots: day_schedule's weekly working hours, over the
+# rolling_schedule_length window, minus whatever's busy on the connected
+# Google Calendar (padded by the service's buffer), sliced to 5-minute starts.
+
+### Get open slots for a service type (Buzz Cut, id 1)
+GET {{base}}/availability?serviceTypeId=1
+
+### Get open slots for a service type with a buffer override (Hot Towel Shave, id 5)
+GET {{base}}/availability?serviceTypeId=5
+
+### Validation failure — missing serviceTypeId (expect 400)
+GET {{base}}/availability
+
+### Validation failure — unknown serviceTypeId (expect 400)
+GET {{base}}/availability?serviceTypeId=9999
+
+### Validation failure — deactivated service type (expect 400)
+# Run the serviceType DELETE example above first, then try its id here.
+GET {{base}}/availability?serviceTypeId=6
