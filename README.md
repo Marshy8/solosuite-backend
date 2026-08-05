@@ -22,23 +22,11 @@ Now you would probably like to know the road map for this project. The road map 
   appointments for the cosmetologist. It will take into account specific break, cleaning, lunch, holiday, etc. events that will be gathered from the
   cosmetologist's input and applied to the cosmetologist's Google calendar.
 
-2. Payment
-
-- The project's payment will be handled with Stripe's API. It will account for all possible instances of payment for tracking reasons. It will cover card
-  payment, client installment payment, cash payment, tips, etc. It will have an endpoints that will allow calls from the cosmetologist that can set things
-  like deposit amount, upfront full payment discount, etc.
-
-3. Notes
+2. Notes
 
 - The project will contain a way for the cosmetologist to submit notes about clients in a clean and concise way. It will record things like the client's name,
   hair type, hair style, conversational notes, etc. as a way for the cosmetologist to have a personalized experience for each client. It will allow the
   cosmetologist to request information on each client, which the project will be able to pull from its database.
-
-4. Bank (stretch goal)
-
-- The project will have access to the Teller API in a way that will collect transactional data from the cosmetologist's bank account. This will populate the database
-  with information about expenses and income for tax accounting so that it can be passed off to a tax pro quarterly for the best odds of no audits and tax breaks. It
-  will submit snapshots to the cosmetologist's Google Sheets, where a data dashboard will be constructed by the cosmetologist.
 
 # How To Run It On Your Machine
 
