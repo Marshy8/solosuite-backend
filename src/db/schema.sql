@@ -22,3 +22,13 @@ CREATE TABLE IF NOT EXISTS day_schedule (
     end_time TEXT,
     is_working INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS client_notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_identifier TEXT NOT NULL UNIQUE,
+    client_name TEXT NOT NULL,
+    last_service_type_id INTEGER,
+    notes TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (last_service_type_id) REFERENCES service_type(id)
+);

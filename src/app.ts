@@ -7,6 +7,7 @@ import "./db/connection";
 import { serviceTypeRouter } from "./routes/serviceType.routes";
 import { generalSettingsRouter } from "./routes/generalSettings.routes";
 import { availabilityRouter } from "./routes/availability.routes";
+import { clientNotesRouter } from "./routes/clientNotes.routes";
 
 export const app = express();
 
@@ -18,3 +19,4 @@ app.use(timeOffRouter);
 app.use(serviceTypeRouter);
 app.use(generalSettingsRouter);
 app.use(availabilityRouter);
+app.use(clientNotesRouter);
