@@ -16,3 +16,7 @@ INSERT INTO day_schedule (id, start_time, end_time, is_working) VALUES
     (4, '09:00', '17:00', 1),
     (5, '09:00', '18:00', 1),
     (6, '10:00', '15:00', 1);
+
+INSERT INTO client_notes (client_identifier, client_name, last_service_type_id, notes, updated_at) VALUES
+    ('555-0101', 'Jordan Lee', 2, 'Wants a bit more taper on the sides next time, mentioned starting a new job.', '2026-07-20 14:30:00'),
+    ('555-0142', 'Sam Rivera', 4, 'Prefers the beard kept short and square, talked about his upcoming trip to Portugal.', '2026-07-28 10:15:00');

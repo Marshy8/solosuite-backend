@@ -302,3 +302,50 @@ GET {{base}}/availability?serviceTypeId=9999
 ### Validation failure — deactivated service type (expect 400)
 # Run the serviceType DELETE example above first, then try its id here.
 GET {{base}}/availability?serviceTypeId=6
+
+
+###############################################################################
+# Client notes  (DB-only — works without Google)
+###############################################################################
+# One row per client, always overwritten — not a visit log. PUT both creates
+# (client_identifier not seen before) and updates (client_identifier already
+# has a row) via the same upsert.
+
+### Get an existing client's note (seeded)
+GET {{base}}/clientNotes/555-0101
+
+### Get a client with no note yet (expect 200, empty body — no 404 handling yet)
+GET {{base}}/clientNotes/555-0000
+
+### Create a note for a brand-new client
+PUT {{base}}/clientNotes
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0199",
+  "client_name": "Casey Nguyen",
+  "last_service_type_id": 1,
+  "notes": "New client, wants a buzz cut every month."
+}
+
+### Update an existing client's note (overwrites the previous service + notes)
+PUT {{base}}/clientNotes
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0101",
+  "client_name": "Jordan Lee",
+  "last_service_type_id": 4,
+  "notes": "Switched to the haircut + beard combo."
+}
+
+### Validation failure — empty notes (expect 400)
+PUT {{base}}/clientNotes
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0101",
+  "client_name": "Jordan Lee",
+  "last_service_type_id": 4,
+  "notes": "   "
+}
