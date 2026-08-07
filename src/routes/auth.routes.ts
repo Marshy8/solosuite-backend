@@ -14,9 +14,14 @@ authRouter.get("/auth", (req: Request, res: Response) => {
 });
 
 authRouter.get("/oauth2callback", async (req: Request, res: Response) => {
-  const code = req.query.code as string;
-  const { tokens } = await oauth2Client.getToken(code);
-  oauth2Client.setCredentials(tokens);
-  saveTokens(tokens);
-  res.send("Authorized! You can close this tab.");
+  try {
+    const code = req.query.code as string;
+    const { tokens } = await oauth2Client.getToken(code);
+    oauth2Client.setCredentials(tokens);
+    saveTokens(tokens);
+    res.send("Authorized! You can close this tab.");
+  } catch (err) {
+    console.error(err);
+    res.status(502).send("Google authorization failed. Please try again.");
+  }
 });
