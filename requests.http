@@ -349,3 +349,67 @@ Content-Type: application/json
   "last_service_type_id": 4,
   "notes": "   "
 }
+
+
+###############################################################################
+# Booking  (hits Google Calendar — needs OAuth; DB-only for the notes lookup)
+###############################################################################
+# Client-facing flow: run GET /availability first to grab a real "start_time"
+# from an open slot, then paste it in below. This route only READS
+# client_notes (to enrich the event description for a returning client) —
+# it never writes to client_notes. Writing/updating notes stays a
+# separate, admin-side action via PUT /clientNotes above.
+
+### Book a brand-new client (no prior note — plain description)
+POST {{base}}/booking
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0299",
+  "client_name": "Riley Chen",
+  "service_type_id": 1,
+  "start_time": "2026-09-01T14:00:00.000Z"
+}
+
+### Book a returning client (seeded note on 555-0101 — expect enriched description)
+POST {{base}}/booking
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0101",
+  "client_name": "Jordan Lee",
+  "service_type_id": 2,
+  "start_time": "2026-09-01T15:00:00.000Z"
+}
+
+### Validation failure — missing client_identifier (expect 400)
+POST {{base}}/booking
+Content-Type: application/json
+
+{
+  "client_name": "Riley Chen",
+  "service_type_id": 1,
+  "start_time": "2026-09-01T14:00:00.000Z"
+}
+
+### Validation failure — non-integer service_type_id (expect 400)
+POST {{base}}/booking
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0299",
+  "client_name": "Riley Chen",
+  "service_type_id": "not-a-number",
+  "start_time": "2026-09-01T14:00:00.000Z"
+}
+
+### Validation failure — empty start_time (expect 400)
+POST {{base}}/booking
+Content-Type: application/json
+
+{
+  "client_identifier": "555-0299",
+  "client_name": "Riley Chen",
+  "service_type_id": 1,
+  "start_time": ""
+}

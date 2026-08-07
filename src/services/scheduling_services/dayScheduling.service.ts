@@ -8,6 +8,7 @@ import { TimeInterval } from "../../types/timeInterval.type";
 import { DayScheduleRow } from "../../db/types/dayScheduleRow.type";
 import { dbTimeToTimeBoundary } from "./helpers/dbTimeToTimeBoundary.helper";
 import { DayScheduleInput } from "../../types/inputs/dayScheduleInput.type";
+import { ValidationError } from "../../errors/validationError";
 
 export function getWeekSchedule(): DayScheduleRow[] {
   const weekSchedule: DayScheduleRow[] = getAllDaySchedules();
@@ -36,7 +37,7 @@ export function setDaySchedule(input: DayScheduleInput) {
   const day = input.day;
 
   if (!Number.isInteger(day) || day < 0 || day > 6) {
-    throw new Error(
+    throw new ValidationError(
       `Day must be an integer value from 0-6. Received value -> ${day}`,
     );
   }
@@ -63,12 +64,12 @@ export function setDaySchedule(input: DayScheduleInput) {
     !HHMM.test(start_time) ||
     !HHMM.test(end_time)
   ) {
-    throw new Error(
+    throw new ValidationError(
       `start_time and end_time must be HH:MM when is_working = true. Received values -> start_time: ${start_time}, end_time: ${end_time}`,
     );
   }
   if (start_time >= end_time) {
-    throw new Error(
+    throw new ValidationError(
       `start_time must be before end_time. Received values -> start_time: ${start_time}, end_time: ${end_time}`,
     );
   }

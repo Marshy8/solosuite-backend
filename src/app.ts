@@ -8,6 +8,7 @@ import { serviceTypeRouter } from "./routes/serviceType.routes";
 import { generalSettingsRouter } from "./routes/generalSettings.routes";
 import { availabilityRouter } from "./routes/availability.routes";
 import { clientNotesRouter } from "./routes/clientNotes.routes";
+import { bookingRouter } from "./routes/booking.routes";
 
 export const app = express();
 
@@ -20,3 +21,4 @@ app.use(serviceTypeRouter);
 app.use(generalSettingsRouter);
 app.use(availabilityRouter);
 app.use(clientNotesRouter);
+app.use(bookingRouter);
