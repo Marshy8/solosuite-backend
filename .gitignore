@@ -5,6 +5,7 @@
 node_modules/
 dist/
 .env
+env-vars.yaml
 *.log
 .DS_Store
 coverage/
