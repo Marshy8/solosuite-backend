@@ -12,4 +12,5 @@ export const env = {
   googleClientSecret: required("GOOGLE_CLIENT_SECRET"),
   googleRedirectUri: required("GOOGLE_REDIRECT_URI"),
   port: Number(process.env.PORT ?? 3000),
+  frontendOrigin: process.env.FRONTEND_ORIGIN ?? "http://localhost:5173",
 };

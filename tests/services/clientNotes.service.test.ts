@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   listClientNotes,
+  getClientName,
   addClientNotes,
   updateClientNotes,
   upsertClientNotes,
@@ -8,13 +9,13 @@ import {
 
 describe("listClientNotes", () => {
   it("returns undefined for a client_identifier with no note", () => {
-    expect(listClientNotes("555-9999")).toBeUndefined();
+    expect(listClientNotes("(555) 555-9999")).toBeUndefined();
   });
 
   it("returns the seeded note for an existing client_identifier", () => {
-    expect(listClientNotes("555-0101")).toEqual({
+    expect(listClientNotes("(555) 555-0101")).toEqual({
       id: 1,
-      client_identifier: "555-0101",
+      client_identifier: "(555) 555-0101",
       client_name: "Jordan Lee",
       last_service_type_id: 2,
       notes:
@@ -24,18 +25,30 @@ describe("listClientNotes", () => {
   });
 });
 
+describe("getClientName", () => {
+  it("returns only the name, not the notes or service id, for an existing client", () => {
+    expect(getClientName("(555) 555-0101")).toEqual({
+      client_name: "Jordan Lee",
+    });
+  });
+
+  it("returns undefined for a client_identifier with no note", () => {
+    expect(getClientName("(555) 555-9999")).toBeUndefined();
+  });
+});
+
 describe("addClientNotes", () => {
   it("adds a note for a brand-new client_identifier", () => {
     addClientNotes({
-      client_identifier: "555-0175",
+      client_identifier: "(555) 555-0175",
       client_name: "Taylor Kim",
       last_service_type_id: 1,
       notes: "First-time client, buzz cut, wants to try a fade next time.",
     });
 
-    const created = listClientNotes("555-0175");
+    const created = listClientNotes("(555) 555-0175");
     expect(created).toMatchObject({
-      client_identifier: "555-0175",
+      client_identifier: "(555) 555-0175",
       client_name: "Taylor Kim",
       last_service_type_id: 1,
       notes: "First-time client, buzz cut, wants to try a fade next time.",
@@ -49,7 +62,7 @@ describe("addClientNotes", () => {
   it("rejects a duplicate client_identifier", () => {
     expect(() =>
       addClientNotes({
-        client_identifier: "555-0101",
+        client_identifier: "(555) 555-0101",
         client_name: "Jordan Lee",
         last_service_type_id: 2,
         notes: "duplicate",
@@ -68,10 +81,21 @@ describe("addClientNotes", () => {
     ).toThrow(/client_identifier/);
   });
 
-  it("rejects an empty client_name", () => {
+  it("rejects a client_identifier that isn't formatted as a phone number", () => {
     expect(() =>
       addClientNotes({
         client_identifier: "555-0180",
+        client_name: "Bad Format",
+        last_service_type_id: 1,
+        notes: "some notes",
+      }),
+    ).toThrow(/client_identifier/);
+  });
+
+  it("rejects an empty client_name", () => {
+    expect(() =>
+      addClientNotes({
+        client_identifier: "(555) 555-0180",
         client_name: "",
         last_service_type_id: 1,
         notes: "some notes",
@@ -82,7 +106,7 @@ describe("addClientNotes", () => {
   it("rejects a non-integer last_service_type_id", () => {
     expect(() =>
       addClientNotes({
-        client_identifier: "555-0181",
+        client_identifier: "(555) 555-0181",
         client_name: "Bad Service Id",
         last_service_type_id: 1.5,
         notes: "some notes",
@@ -93,7 +117,7 @@ describe("addClientNotes", () => {
   it("rejects an empty notes string", () => {
     expect(() =>
       addClientNotes({
-        client_identifier: "555-0182",
+        client_identifier: "(555) 555-0182",
         client_name: "No Notes",
         last_service_type_id: 1,
         notes: "  ",
@@ -105,16 +129,16 @@ describe("addClientNotes", () => {
 describe("updateClientNotes", () => {
   it("updates an existing client's note and reads back the change", () => {
     updateClientNotes({
-      client_identifier: "555-0142",
+      client_identifier: "(555) 555-0142",
       client_name: "Sam Rivera",
       last_service_type_id: 5,
       notes: "Switched to a hot towel shave, wants the same next time.",
     });
 
-    const updated = listClientNotes("555-0142");
+    const updated = listClientNotes("(555) 555-0142");
     expect(updated).toMatchObject({
       id: 2,
-      client_identifier: "555-0142",
+      client_identifier: "(555) 555-0142",
       client_name: "Sam Rivera",
       last_service_type_id: 5,
       notes: "Switched to a hot towel shave, wants the same next time.",
@@ -125,7 +149,7 @@ describe("updateClientNotes", () => {
   it("rejects invalid input the same way add does", () => {
     expect(() =>
       updateClientNotes({
-        client_identifier: "555-0142",
+        client_identifier: "(555) 555-0142",
         client_name: "Sam Rivera",
         last_service_type_id: 5,
         notes: "",
@@ -136,17 +160,17 @@ describe("updateClientNotes", () => {
 
 describe("upsertClientNotes", () => {
   it("creates a new row when the client doesn't exist yet", () => {
-    expect(listClientNotes("555-0188")).toBeUndefined();
+    expect(listClientNotes("(555) 555-0188")).toBeUndefined();
 
     upsertClientNotes({
-      client_identifier: "555-0188",
+      client_identifier: "(555) 555-0188",
       client_name: "Morgan Diaz",
       last_service_type_id: 3,
       notes: "Wants a beard trim every three weeks.",
     });
 
-    expect(listClientNotes("555-0188")).toMatchObject({
-      client_identifier: "555-0188",
+    expect(listClientNotes("(555) 555-0188")).toMatchObject({
+      client_identifier: "(555) 555-0188",
       client_name: "Morgan Diaz",
       last_service_type_id: 3,
       notes: "Wants a beard trim every three weeks.",
@@ -154,16 +178,16 @@ describe("upsertClientNotes", () => {
   });
 
   it("updates in place when the client already exists, keeping the same row", () => {
-    const before = listClientNotes("555-0101");
+    const before = listClientNotes("(555) 555-0101");
 
     upsertClientNotes({
-      client_identifier: "555-0101",
+      client_identifier: "(555) 555-0101",
       client_name: "Jordan Lee",
       last_service_type_id: 4,
       notes: "Switched to haircut + beard combo.",
     });
 
-    const after = listClientNotes("555-0101");
+    const after = listClientNotes("(555) 555-0101");
     expect(after?.id).toBe(before?.id);
     expect(after).toMatchObject({
       last_service_type_id: 4,

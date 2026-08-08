@@ -15,6 +15,13 @@ export function listClientNotes(
   return clientNotesRow;
 }
 
+export function getClientName(
+  client_identifier: string,
+): { client_name: string } | undefined {
+  const clientNotesRow = listClientNotes(client_identifier);
+  return clientNotesRow ? { client_name: clientNotesRow.client_name } : undefined;
+}
+
 export function upsertClientNotes(input: ClientNotesInput) {
   if (listClientNotes(input.client_identifier)) {
     updateClientNotes(input);

@@ -14,10 +14,10 @@ export function validateClientNotes(
 
   if (
     typeof clientNotes.client_identifier !== "string" ||
-    clientNotes.client_identifier.trim() === ""
+    !/^\(\d{3}\) \d{3}-\d{4}$/.test(clientNotes.client_identifier)
   ) {
     throw new ValidationError(
-      `client_identifier must be a non-empty string. Received -> ${clientNotes.client_identifier}`,
+      `client_identifier must be a phone number formatted as (xxx) xxx-xxxx. Received -> ${clientNotes.client_identifier}`,
     );
   }
 

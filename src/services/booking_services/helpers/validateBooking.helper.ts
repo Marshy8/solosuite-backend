@@ -12,10 +12,10 @@ export function validateBooking(input: unknown): asserts input is BookingInput {
 
   if (
     typeof booking.client_identifier !== "string" ||
-    booking.client_identifier.trim() === ""
+    !/^\(\d{3}\) \d{3}-\d{4}$/.test(booking.client_identifier)
   ) {
     throw new ValidationError(
-      `client_identifier must be a non-empty string. Received -> ${booking.client_identifier}`,
+      `client_identifier must be a phone number formatted as (xxx) xxx-xxxx. Received -> ${booking.client_identifier}`,
     );
   }
 

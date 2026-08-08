@@ -5,7 +5,6 @@ import { getServiceType } from "../../db/queries/serviceType.queries";
 import { getDaySchedule } from "../../db/queries/daySchedule.queries";
 import { getBusyIntervals } from "../google_services/googleCalendar.service";
 import { dateTimeNormalization } from "./helpers/zonedDateTime.helper";
-import { padIntervalEnd } from "./helpers/padIntervalEnd.helper";
 import { workingAndBusyIntervalsDifference } from "./helpers/workingAndBusyIntervalsDifference.helper";
 import { sliceFreeIntervalsIntoSlots } from "./helpers/sliceFreeIntervalsIntoSlots.helper";
 import { TimeChunk } from "../../types/timeChunk.type";
@@ -55,12 +54,13 @@ export async function getAvailableSlots(
     now.toISOString(),
     windowEnd.toISOString(),
   );
-  const paddedBusyIntervals: TimeChunk[] = busyIntervals.map((interval) =>
-    padIntervalEnd(
-      { start: new Date(interval.start), end: new Date(interval.end) },
-      bufferMinutes,
-    ),
-  );
+  // Booked events already include their own buffer as part of their duration
+  // (see booking.service.ts), so busy intervals need no extra padding here —
+  // padding on top of that would double-count the gap after every booking.
+  const busyChunks: TimeChunk[] = busyIntervals.map((interval) => ({
+    start: new Date(interval.start),
+    end: new Date(interval.end),
+  }));
 
   const slots: Date[] = [];
 
@@ -99,7 +99,7 @@ export async function getAvailableSlots(
       continue;
     }
 
-    const freeChunks = paddedBusyIntervals.reduce(
+    const freeChunks = busyChunks.reduce(
       (chunks, busy) => workingAndBusyIntervalsDifference(chunks, busy),
       [workingChunk],
     );

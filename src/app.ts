@@ -1,9 +1,11 @@
 import express from "express";
+import cors from "cors";
 import { authRouter } from "./routes/auth.routes";
 import { calendarRouter } from "./routes/calendar.routes";
 import { dayScheduleRouter } from "./routes/daySchedule.routes";
 import { timeOffRouter } from "./routes/timeOff.routes";
 import "./db/connection";
+import { env } from "./config/env";
 import { serviceTypeRouter } from "./routes/serviceType.routes";
 import { generalSettingsRouter } from "./routes/generalSettings.routes";
 import { availabilityRouter } from "./routes/availability.routes";
@@ -12,6 +14,7 @@ import { bookingRouter } from "./routes/booking.routes";
 
 export const app = express();
 
+app.use(cors({ origin: env.frontendOrigin }));
 app.use(express.json());
 app.use(authRouter);
 app.use(calendarRouter);

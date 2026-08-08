@@ -25,7 +25,7 @@ describe("POST /booking", () => {
     createEventMock.mockResolvedValue({ id: "evt_101" });
 
     const res = await request(app).post("/booking").send({
-      client_identifier: "555-0199",
+      client_identifier: "(555) 555-0199",
       client_name: "Casey Nguyen",
       service_type_id: 1,
       start_time: "2026-09-01T14:00:00.000Z",
@@ -33,9 +33,9 @@ describe("POST /booking", () => {
 
     expect(res.status).toBe(204);
     expect(createEventMock).toHaveBeenCalledWith({
-      summary: "Buzz Cut — Casey Nguyen",
+      summary: "Buzz Cut — Casey Nguyen — (555) 555-0199",
       start: { dateTime: "2026-09-01T14:00:00.000Z" },
-      end: { dateTime: "2026-09-01T14:15:00.000Z" },
+      end: { dateTime: "2026-09-01T14:30:00.000Z" },
     });
   });
 
@@ -43,7 +43,7 @@ describe("POST /booking", () => {
     createEventMock.mockResolvedValue({ id: "evt_102" });
 
     const res = await request(app).post("/booking").send({
-      client_identifier: "555-0142", // seeded: Sam Rivera, last_service_type_id 4
+      client_identifier: "(555) 555-0142", // seeded: Sam Rivera, last_service_type_id 4
       client_name: "Sam Rivera",
       service_type_id: 3,
       start_time: "2026-09-01T09:00:00.000Z",
@@ -60,7 +60,7 @@ describe("POST /booking", () => {
 
   it("rejects invalid input with 400 and never calls Google", async () => {
     const res = await request(app).post("/booking").send({
-      client_identifier: "555-0199",
+      client_identifier: "(555) 555-0199",
       client_name: "Casey Nguyen",
       service_type_id: "not-a-number",
       start_time: "2026-09-01T14:00:00.000Z",
@@ -86,7 +86,7 @@ describe("POST /booking", () => {
     createEventMock.mockRejectedValue(new Error("google boom"));
 
     const res = await request(app).post("/booking").send({
-      client_identifier: "555-0199",
+      client_identifier: "(555) 555-0199",
       client_name: "Casey Nguyen",
       service_type_id: 1,
       start_time: "2026-09-01T14:00:00.000Z",
